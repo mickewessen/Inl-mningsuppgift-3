@@ -7,9 +7,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Azure.Devices;
 using SharedLibraries.Models;
 using SharedLibraries.Services;
-using Microsoft.Azure.Devices;
 
 namespace AzureFunctions
 {
@@ -23,20 +23,17 @@ namespace AzureFunctions
             ILogger log)
         {
 
-
-            string targetdeviceId = req.Query["targetdevice"];
+            string targetDeviceId = req.Query["targetdeviceid"];
             string message = req.Query["message"];
-
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
 
-
             var data = JsonConvert.DeserializeObject<BodyMessageModel>(requestBody);
 
-            targetdeviceId = targetdeviceId ?? data?.TargetDeviceId;
+            targetDeviceId = targetDeviceId ?? data?.TargetDeviceId;
             message = message ?? data?.Message;
 
-            await DeviceServices.SendMessageToDeviceAsync(serviceClient, targetdeviceId, message);
+            await DeviceServices.SendMessageToDeviceAsync(serviceClient, targetDeviceId, message);
 
             return new OkResult();
         }
